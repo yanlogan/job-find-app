@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 const Gig = require('../models/Gig');
+const { Op } = require('sequelize');
+const { or, like } = Op;
 
 // get gig list
 router.get('/', (req, res) => 
@@ -12,7 +14,7 @@ router.get('/', (req, res) =>
       });
     })
     .catch(err => console.log(err))
-  );
+);
 
 // display a form to add gig
 router.get('/add', (req, res) => res.render('add'));
@@ -59,5 +61,40 @@ router.post('/add', (req, res) => {
   
 })
 
+
+// search for gigs
+router.get('/search', (req, res) => {
+  let { term } = req.query;
+  term = term.toLowerCase();
+
+  Gig.findAll({
+    raw: true,
+    where: {
+      [or]: [
+        {
+          title: {
+            [like]: '%' + term + '%'
+          }
+        },
+        {
+          technologies: {
+            [like]: '%' + term + '%'
+          }
+        },
+        {
+          description: {
+            [like]: '%' + term + '%'
+          }
+        },
+      ]
+    }
+  })
+  .then(gigs => {
+    res.render('gigs', {
+      gigs
+    });
+  })
+  .catch(err => console.log(err))
+});
 
 module.exports = router;
