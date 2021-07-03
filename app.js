@@ -8,11 +8,14 @@ db.authenticate()
   .then(() => console.log('Database connected...'))
   .catch(err => console.log('Error ' + err));
 
-
 const app = express();
 
+// Handlebars middleware
 app.engine('handlebars', exphdb({ defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
+
+// Body parser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));

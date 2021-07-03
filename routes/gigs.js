@@ -5,7 +5,7 @@ const Gig = require('../models/Gig');
 
 // get gig list
 router.get('/', (req, res) => 
-  Gig.findAll()
+  Gig.findAll({raw: true })
     .then(gigs => {
       res.render('gigs', {
         gigs
@@ -19,22 +19,44 @@ router.get('/add', (req, res) => res.render('add'));
 
 // add a gig
 router.post('/add', (req, res) => {
-  const data = {
-    title: '',
-    technologies: '',
-    description: '',
-    budget: '',
-    contact_email: '',
-  };
+  // variable names match the 'name' attributes of input fields
+  let { title, technologies, description, budget, contact_email } = req.body;
 
-  let { title, technologies, description, budget, contact_email } = data;
-  Gig.create({
-    title,
-    technologies,
-    description,
-    budget,
-    contact_email
-  });
+  let errors = [];
+
+  // validate fields
+  if (!title) errors.push({ text: 'Please, add a gig title'});
+  if (!description) errors.push({ text: 'Please, add a gig description'});
+  if (!contact_email) errors.push({ text: 'Please, add a contact email'});
+
+  if (errors.length > 0) {
+    res.render('add', {
+      errors,
+      title,
+      technologies,
+      description,
+      budget,
+      contact_email
+    })
+  } else {
+    // insert into database
+
+    if (!budget) budget = 'Not set';
+    else budget = `$${budget}`;
+
+    technologies = technologies.toLowerCase().replace(/, /g, ',');
+
+    Gig.create({
+      title,
+      technologies,
+      description,
+      budget,
+      contact_email
+    })
+      .then(gig => res.redirect('/gigs')
+      .catch(err => console.log(err)));
+  }
+  
 })
 
 

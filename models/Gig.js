@@ -1,22 +1,21 @@
-const { STRING } = require('sequelize');
-const Sequelize = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 const db = require('../config/database');
 
 const Gig = db.define('gig', {
   title: {
-    type: Sequelize.STRING
+    type: DataTypes.STRING
   },
   technologies: {
-    type: Sequelize.STRING
+    type: DataTypes.STRING
   },
   description: {
-    type: Sequelize.STRING
+    type: DataTypes.STRING
   },
   budget: {
-    type: Sequelize.STRING
+    type: DataTypes.STRING
   },
   contact_email: {
-    type: Sequelize.STRING
+    type: DataTypes.STRING
   },
 });
 
